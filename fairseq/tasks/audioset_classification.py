@@ -3,14 +3,15 @@ import numpy as np
 import torch
 import csv
 from sklearn import metrics as sklearn_metrics
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from omegaconf import MISSING
 import os
 
 from fairseq.dataclass import FairseqDataclass
 from fairseq.tasks import register_task, FairseqTask
 from fairseq.logging import metrics
 
-from ..data.audioset import get_dataset
+from fairseq.data.audio import audioset
 
 
 logger = logging.getLogger(__name__)
@@ -18,8 +19,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AudiosetClassificationConfig(FairseqDataclass):
+    data: str = field(default=MISSING, metadata={"help": "path to data directory"})
     sample_rate: int = 32000
-    label_descriptors: str = "label_descriptors.csv"
+    label_descriptors: str = "/share/rk7/home/fschmid/deployment/fairseq/examples/passt/data/label_descriptors.csv"
 
 
 @register_task("audioset_classification", dataclass=AudiosetClassificationConfig)
@@ -45,7 +47,7 @@ class AudiosetClassificationTask(FairseqTask):
     def load_labels(self):
         # load label index <-> name mapping
         labels = {}
-        path = os.path.join(self.cfg.data, self.cfg.label_descriptors)
+        path = self.cfg.label_descriptors
         with open(path, 'r') as f:
             reader = csv.reader(f, delimiter=',')
             lines = list(reader)
@@ -62,9 +64,9 @@ class AudiosetClassificationTask(FairseqTask):
     def load_dataset(
         self, split: str, task_cfg: AudiosetClassificationConfig = None, **kwargs
     ):
-        # task_cfg = task_cfg or self.cfg
+        task_cfg = task_cfg or self.cfg
         data_path = self.cfg.data
-        self.datasets[split] = get_dataset(data_path, split, task_cfg.sample_rate)
+        self.datasets[split] = audioset.get_dataset(data_path, split, task_cfg.sample_rate)
 
     def calculate_stats(self, output, target):
         classes_num = target.shape[-1]

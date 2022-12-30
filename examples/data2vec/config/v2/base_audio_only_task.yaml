@@ -32,7 +32,7 @@ dataset:
   disable_validation: true
 
 distributed_training:
-  distributed_world_size: 8
+  distributed_world_size: 1
   ddp_backend: legacy_ddp
 
 criterion:

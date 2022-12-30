@@ -1,7 +1,7 @@
 # @package _group_
 
 common:
-  fp16: true
+  fp16: false
   log_format: json
   log_interval: 200
   all_gather_list_size: 70000
@@ -15,21 +15,19 @@ checkpoint:
   maximize_best_checkpoint_metric: true
 
 task:
-  _name: audio_classification
+  _name: audioset_classification
   data: ???
-  normalize: true
-  labels: lbl
 
 dataset:
-  num_workers: 6
+  num_workers: 1
   max_tokens: 2560000
   skip_invalid_size_inputs_valid_test: true
-  valid_subset: eval
+  valid_subset: test
   validate_interval: 5
 
 distributed_training:
   ddp_backend: legacy_ddp
-  distributed_world_size: 8
+  distributed_world_size: 1
 
 criterion:
   _name: model
@@ -52,19 +50,7 @@ lr_scheduler:
   warmup_updates: 5000
 
 model:
-  _name: audio_classification
-  model_path: ???
-  apply_mask: true
-  mask_prob: 0.6
-  mask_length: 5 # scratch 1
-  mask_channel_prob: 0
-  mask_channel_length: 64
-  layerdrop: 0.1
-  dropout: 0.1
-  activation_dropout: 0.1
-  attention_dropout: 0.2
-  feature_grad_mult: 0 # scratch 1
-  label_mixup: true
-  source_mixup: 0.5
-  prediction_mode: lin_softmax # scratch average_sigmoid
+  _name: passt
+  s_patchout_f: 8
+  s_patchout_t: 8
 
