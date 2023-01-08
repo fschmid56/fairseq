@@ -34,15 +34,18 @@ class FairseqAudioSetDataset(FairseqDataset):
         }
         return batch
 
-
     def num_tokens(self, index):
         return 1
 
     def size(self, index):
         return 1
 
-    def __init__(self, dataset):
+    def __init__(self,
+                 dataset,
+                 shuffle=True
+                 ):
         self.dataset = dataset
+        self.shuffle = shuffle
 
     def __getitem__(self, index):
         return self.dataset[index]
@@ -50,6 +53,16 @@ class FairseqAudioSetDataset(FairseqDataset):
     def __len__(self):
         # return len(self.dataset)
         return 1000
+
+    def ordered_indices(self):
+        """Return an ordered list of indices. Batches will be constructed based
+        on this order."""
+        if self.shuffle:
+            order = [np.random.permutation(len(self))]
+        else:
+            order = [np.arange(len(self))]
+
+        return order[0]
 
 
 class AudioSetDataset(TorchDataset):
@@ -89,6 +102,9 @@ class AudioSetDataset(TorchDataset):
             'waveform': (clip_samples,),
             'target': (classes_num,)}
         """
+        # for debugging
+        # return np.ones(320000), np.ones(527), np.ones(527)
+
         if self.dataset_file is None:
             self.open_hdf5()
 

@@ -5,7 +5,6 @@ import csv
 from sklearn import metrics as sklearn_metrics
 from dataclasses import dataclass, field
 from omegaconf import MISSING
-import os
 
 from fairseq.dataclass import FairseqDataclass
 from fairseq.tasks import register_task, FairseqTask
@@ -43,6 +42,10 @@ class AudiosetClassificationTask(FairseqTask):
         super().__init__(cfg)
 
         self.state.add_factory("labels", self.load_labels)
+
+    @classmethod
+    def setup_task(cls, cfg: AudiosetClassificationConfig, **kwargs):
+        return cls(cfg)
 
     def load_labels(self):
         # load label index <-> name mapping

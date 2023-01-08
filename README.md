@@ -11,6 +11,29 @@
 </p>
 
 --------------------------------------------------------------------------------
+Install fairseq on our RKs (CUDA 11.1):
+
+```
+pip install torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+export SETUPTOOLS_ENABLE_FEATURES="legacy-editable"
+pip install --no-build-isolation --editable ./
+```
+--------------------------------------------------------------------------------
+Test installation with a simple interactive language translation example:
+```
+curl https://dl.fbaipublicfiles.com/fairseq/models/wmt14.v2.en-fr.fconv-py.tar.bz2 | tar xvjf -
+pip install sacremoses
+pip install subword-nmt
+MODEL_DIR=wmt14.en-fr.fconv-py
+fairseq-interactive --path $MODEL_DIR/model.pt $MODEL_DIR --beam 5 --source-lang en --target-lang fr --tokenizer moses --bpe subword_nmt --bpe-codes $MODEL_DIR/bpecodes
+```
+--------------------------------------------------------------------------------
+Running PaSST training on AudioSet (not done yet!) use:
+
+```
+python fairseq_cli/hydra_train.py -m --config-dir examples/passt/config/ --config-name base_classification task.data=/share/rk7/shared/audioset_hdf5s/mp3
+```
+--------------------------------------------------------------------------------
 
 Fairseq(-py) is a sequence modeling toolkit that allows researchers and
 developers to train custom models for translation, summarization, language

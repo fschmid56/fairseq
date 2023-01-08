@@ -188,6 +188,8 @@ def do_setup(package_data):
             "tqdm",
             "bitarray",
             "torchaudio",
+            "av",
+            "h5py",
             "scikit-learn",
             "packaging",
         ],
